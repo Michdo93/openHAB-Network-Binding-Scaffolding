@@ -23,8 +23,8 @@ Ensure the following tools are installed on your management or openHAB host:
 Run the master script with your target network range:
 
 ```
-chmod +x run_all.sh
-./run_all.sh 192.168.1.0/24
+chmod +x runner.sh
+./runner.sh 192.168.1.0/24
 
 ```
 
