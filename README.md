@@ -25,7 +25,6 @@ Run the master script with your target network range:
 ```
 chmod +x runner.sh
 ./runner.sh 192.168.1.0/24
-
 ```
 
 After completion, copy the generated `.things`, `.items`, and `.sitemap` files directly into your openHAB configuration directories.
