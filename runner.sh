@@ -1,21 +1,17 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+# Komfort-Wrapper: venv anlegen (einmalig) und kompletten Lauf starten.
+#   ./runner.sh 192.168.1.0/24 [weitere scaffold.py-run-Optionen]
+set -euo pipefail
+cd "$(dirname "$0")"
 
-# Configuration
-NETWORK_RANGE=${1:-"192.168.0.0/24"}
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 <netz/cidr> [Optionen]   (z. B. $0 192.168.1.0/24 --chart-service rrd4j)" >&2
+    exit 1
+fi
 
-echo "=== Step 1: Discovering Network & Generating Things ==="
-python3 discover_things.py "$NETWORK_RANGE"
+if [[ ! -x .venv/bin/python ]]; then
+    python3 -m venv .venv
+    .venv/bin/pip install -q -r requirements.txt
+fi
 
-echo "=== Step 2: Generating Items from Things ==="
-python3 generate_items.py
-
-echo "=== Step 3: Generating Sitemap ==="
-python3 generate_sitemap.py
-
-echo "=== Scaffolding Complete! ==="
-echo "Generated files:"
-echo " - network.things"
-echo " - network.items"
-echo " - network_monitoring.sitemap"
-echo "Copy these files into your openHAB configuration directories (e.g., /etc/openhab/things/, items/, sitemaps/)."
+exec .venv/bin/python scaffold.py run "$@"

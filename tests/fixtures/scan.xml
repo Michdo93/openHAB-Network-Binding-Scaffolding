@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nmaprun scanner="nmap" args="nmap -Pn --open -p 22,80,443,1883,8080,9999 -oX -">
+  <host><status state="up"/>
+    <address addr="192.168.1.10" addrtype="ipv4"/>
+    <address addr="AA:BB:CC:00:00:10" addrtype="mac" vendor="Synology"/>
+    <hostnames><hostname name="my-nas.fritz.box" type="PTR"/></hostnames>
+    <ports>
+      <port protocol="tcp" portid="22"><state state="open"/><service name="ssh"/></port>
+      <port protocol="tcp" portid="443"><state state="open"/><service name="https"/></port>
+      <port protocol="tcp" portid="9999"><state state="open"/><service name="abyss"/></port>
+      <port protocol="tcp" portid="81"><state state="closed"/><service name="hosts2-ns"/></port>
+    </ports>
+  </host>
+  <host><status state="up"/>
+    <address addr="192.168.1.11" addrtype="ipv4"/>
+    <hostnames><hostname name="my-pc" type="PTR"/></hostnames>
+    <ports>
+      <port protocol="tcp" portid="3389"><state state="open"/><service name="ms-wbt-server"/></port>
+      <port protocol="tcp" portid="50123"><state state="open"/><service name="unknown"/></port>
+    </ports>
+  </host>
+  <host><status state="up"/>
+    <address addr="192.168.1.12" addrtype="ipv4"/>
+    <hostnames/>
+  </host>
+  <host><status state="up"/>
+    <address addr="192.168.1.13" addrtype="ipv4"/>
+    <hostnames><hostname name="my-nas.guest.lan" type="PTR"/></hostnames>
+    <ports><port protocol="tcp" portid="1883"><state state="open"/><service name="mqtt"/></port></ports>
+  </host>
+  <host><status state="down"/>
+    <address addr="192.168.1.99" addrtype="ipv4"/>
+  </host>
+</nmaprun>

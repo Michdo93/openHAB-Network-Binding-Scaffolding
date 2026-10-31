@@ -1,0 +1,59 @@
+{% set P = settings.item_prefix %}
+{% set svc = (' service=' ~ (settings.chart_service|q)) if settings.chart_service else '' %}
+{% macro online(item, label=None) -%}
+Text item={{ item }}{% if label %} label={{ (label ~ " [%s]")|q }}{% endif %} valuecolor=[ON="green", OFF="red"]
+{%- endmacro %}
+sitemap {{ settings.sitemap_name }} label={{ settings.sitemap_label|q }}
+{
+    Frame label="Übersicht" {
+        Text item={{ P }}gOnline
+    }
+
+    Frame label="Geräte" {
+{% for d in devices %}
+        {{ online(d.item ~ "_Online", d.label) }} {
+            Frame label="Status" {
+                {{ online(d.item ~ "_Online") }}
+                Text item={{ d.item }}_Latency
+                Text item={{ d.item }}_LastSeen
+            }
+{% if d.services %}
+            Frame label="Dienste" {
+{% for s in d.services %}
+                {{ online(s.item ~ "_Online") }}
+                Text item={{ s.item }}_Latency
+{% endfor %}
+            }
+{% endif %}
+{% if settings.charts %}
+            Frame label="Latenz-Verlauf" {
+                Chart item={{ d.item }}_Latency period=D refresh=60000{{ svc }}
+            }
+{% endif %}
+        }
+{% endfor %}
+    }
+{% if speedtest %}
+{% set S = speedtest.item %}
+
+    Frame label="Speedtest" {
+        Text item={{ S }}_Running
+        Text item={{ S }}_Progress visibility=[{{ S }}_Running==ON]
+        Text item={{ S }}_RateDown
+        Text item={{ S }}_RateUp
+        Text item={{ S }}_TestEnd
+{% if settings.charts %}
+        Text label="Verlauf" icon="line" {
+            Frame label="Download" {
+                Chart item={{ S }}_RateDown period=D refresh=300000{{ svc }}
+                Chart item={{ S }}_RateDown period=W refresh=300000{{ svc }}
+            }
+            Frame label="Upload" {
+                Chart item={{ S }}_RateUp period=D refresh=300000{{ svc }}
+                Chart item={{ S }}_RateUp period=W refresh=300000{{ svc }}
+            }
+        }
+{% endif %}
+    }
+{% endif %}
+}

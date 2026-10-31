@@ -1,0 +1,29 @@
+{% set P = settings.item_prefix %}
+// Automatisch generiert von openHAB-Network-Binding-Scaffolding ({{ generated }})
+
+Group                   {{ P }}gNetwork        "Netzwerk"                <network>
+Group:Switch:OR(ON,OFF) {{ P }}gOnline         "Geräte online [%d]"      <network>  ({{ P }}gNetwork)
+{% for d in devices %}
+
+// ---- {{ d.label }} ({{ d.ip }})
+Group       {{ d.item }}            {{ d.label|q }}  <network>  ({{ P }}gNetwork)  ["NetworkAppliance"]
+Switch      {{ d.item }}_Online     "Online [%s]"                                  <network>  ({{ d.item }}, {{ P }}gOnline)  ["Status"]                 { channel="network:pingdevice:{{ d.id }}:online" }
+Number:Time {{ d.item }}_Latency    "Latenz [%.1f ms]"                             <time>     ({{ d.item }})  ["Measurement", "Duration"]  { channel="network:pingdevice:{{ d.id }}:latency" }
+DateTime    {{ d.item }}_LastSeen   "Zuletzt gesehen [%1$td.%1$tm. %1$tH:%1$tM]"   <time>     ({{ d.item }})  ["Status", "Timestamp"]      { channel="network:pingdevice:{{ d.id }}:lastseen" }
+{% for s in d.services %}
+Switch      {{ s.item }}_Online     {{ (s.label ~ " (" ~ s.port ~ ") [%s]")|q }}  <network>  ({{ d.item }})  ["Status"]                 { channel="network:servicedevice:{{ s.uid }}:online" }
+Number:Time {{ s.item }}_Latency    {{ (s.label ~ " Latenz [%.1f ms]")|q }}  <time>     ({{ d.item }})  ["Measurement", "Duration"]  { channel="network:servicedevice:{{ s.uid }}:latency" }
+{% endfor %}
+{% endfor %}
+{% if speedtest %}
+{% set S = speedtest.item %}
+
+// ---- Speedtest
+Group                   {{ S }}             "Speedtest"                        <network>  ({{ P }}gNetwork)
+Switch                  {{ S }}_Running     "Test läuft [%s]"                  <switch>   ({{ S }})  ["Status"]                  { channel="network:speedtest:internet:isRunning" }
+Number:Dimensionless    {{ S }}_Progress    "Fortschritt [%d %unit%]"            <line>     ({{ S }})  ["Status", "Progress"]      { channel="network:speedtest:internet:progress" }
+Number:DataTransferRate {{ S }}_RateDown    "Download [%.1f Mbit/s]"           <network>  ({{ S }})  ["Measurement", "Speed"]    { channel="network:speedtest:internet:rateDown" }
+Number:DataTransferRate {{ S }}_RateUp      "Upload [%.1f Mbit/s]"             <network>  ({{ S }})  ["Measurement", "Speed"]    { channel="network:speedtest:internet:rateUp" }
+DateTime                {{ S }}_TestStart   "Teststart [%1$td.%1$tm. %1$tH:%1$tM]"  <time>  ({{ S }})  ["Status", "Timestamp"]  { channel="network:speedtest:internet:testStart" }
+DateTime                {{ S }}_TestEnd     "Letzter Test [%1$td.%1$tm. %1$tH:%1$tM]" <time> ({{ S }})  ["Status", "Timestamp"]  { channel="network:speedtest:internet:testEnd" }
+{% endif %}
