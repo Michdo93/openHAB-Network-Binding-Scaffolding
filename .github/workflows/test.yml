@@ -1,0 +1,26 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: sudo apt-get install -y -q nmap
+      - run: pip install -r requirements.txt pytest
+      - name: Fetch Network Binding spec
+        run: |
+          curl -fsSL -o thing-types.xml \
+            https://raw.githubusercontent.com/openhab/openhab-addons/main/bundles/org.openhab.binding.network/src/main/resources/OH-INF/thing/thing-types.xml
+      - run: OHNET_THING_TYPES=thing-types.xml pytest -v
+      - name: Smoke test against localhost
+        run: |
+          python3 -m http.server 8080 & sleep 1
+          python3 scaffold.py run 127.0.0.1 --ports 22,8080

@@ -1,0 +1,18 @@
+// Automatisch generiert von openHAB-Network-Binding-Scaffolding ({{ generated }})
+// Änderungen bitte im Inventory vornehmen und neu rendern.
+{% for d in devices %}
+
+// {{ d.label }} – {{ d.ip }}{% if d.mac %} / {{ d.mac }}{% endif %}{% if d.vendor %} ({{ d.vendor }}){% endif %}
+
+Thing network:pingdevice:{{ d.id }} {{ d.label|q }} @ {{ d.location|q }} [ hostname={{ d.address|q }}{% if d.mac %}, macAddress={{ d.mac|q }}{% endif %}, refreshInterval={{ d.refresh_interval }} ]
+{% for s in d.services %}
+Thing network:servicedevice:{{ s.uid }} {{ (d.label ~ " – " ~ s.label ~ " (" ~ s.port ~ ")")|q }} @ {{ d.location|q }} [ hostname={{ d.address|q }}, port={{ s.port }}, refreshInterval={{ d.refresh_interval }} ]
+{% endfor %}
+{% for s in d.review %}
+// REVIEW (im Inventory enabled: true setzen): {{ s.label }} auf Port {{ s.port }}
+{% endfor %}
+{% endfor %}
+{% if speedtest %}
+
+Thing network:speedtest:internet "Speedtest" @ {{ speedtest.location|q }} [ url={{ speedtest.url|q }}, fileName={{ speedtest.file_name|q }}, refreshInterval={{ speedtest.refresh_interval }}, initialDelay={{ speedtest.initial_delay }} ]
+{% endif %}
