@@ -22,6 +22,7 @@ MAC addresses end up as `macAddress` on the ping Things, enabling the binding's 
 ## Quick start
 
 ```bash
+chmod +x runner.sh   # once
 ./runner.sh 192.168.1.0/24
 # with speedtest and persistence-backed charts
 ./runner.sh 192.168.1.0/24 --speedtest-url https://bouygues.testdebit.info/ --speedtest-file 10M.iso --chart-service rrd4j
